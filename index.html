@@ -79,13 +79,10 @@ function save(d){
 _cache = JSON.parse(JSON.stringify(d));
 localStorage.setItem('sns_members', JSON.stringify(d.members || []));
 if(!_fbReady) return;
-const toSave = {
-blocked: d.blocked || {},
-bookings: {},
-members: d.members || []
-};
-(d.bookings || []).forEach(b => { toSave.bookings[b.id] = b; });
-_firebaseDb.ref(DB_PATH).set(toSave).catch(e => console.warn('Firebase write error:', e));
+const bookings = {};
+(d.bookings || []).forEach(b => { bookings[b.id] = b; });
+_firebaseDb.ref(DB_PATH).update({ blocked: d.blocked || {}, bookings })
+  .catch(e => console.warn('Firebase write error:', e));
 }
 function startFirebaseSync(){
 _firebaseDb.ref(DB_PATH).on('value', (snapshot) => {
@@ -93,7 +90,7 @@ const val = snapshot.val();
 const localMembers = JSON.parse(localStorage.getItem('sns_members') || '[]');
 if(val){
 const fbRaw = val.members;
-const fbMembers = Array.isArray(fbRaw) ? fbRaw : Object.values(fbRaw || {});
+const fbMembers = Array.isArray(fbRaw) ? fbRaw : Object.keys(fbRaw || {});
 const merged = Array.from(new Set([...localMembers, ...fbMembers]));
 localStorage.setItem('sns_members', JSON.stringify(merged));
 _cache = {
@@ -236,7 +233,7 @@ d.members = d.members.filter(m=>m!==name);
 d.bookings = d.bookings.filter(b=>b.user!==name);
 if(selUser===name){ selUser=null; localStorage.removeItem('sns_last_user'); renderHeaderRight(); }
 save(d);
-writeMembersToFirebase(d.members);
+removeMemberFromFirebase(name);
 renderNamePanel();
 }
 function selectName(name){
@@ -244,10 +241,15 @@ selUser = name;
 renderNamePanel();
 document.getElementById('btn-next-name').disabled = false;
 }
-function writeMembersToFirebase(members){
+function addMemberToFirebase(name){
 if(!_fbReady) return;
-_firebaseDb.ref(DB_PATH + '/members').set(members)
-  .catch(e => console.warn('Firebase members write error:', e));
+_firebaseDb.ref(DB_PATH + '/members').update({[name]: true})
+  .catch(e => console.warn('Firebase member add error:', e));
+}
+function removeMemberFromFirebase(name){
+if(!_fbReady) return;
+_firebaseDb.ref(DB_PATH + '/members/' + name).remove()
+  .catch(e => console.warn('Firebase member remove error:', e));
 }
 function registerName(){
 const val = document.getElementById('new-name').value.trim();
@@ -257,7 +259,7 @@ if(!d.members.includes(val)){
   d.members.push(val);
   _cache = JSON.parse(JSON.stringify(d));
   localStorage.setItem('sns_members', JSON.stringify(d.members));
-  writeMembersToFirebase(d.members);
+  addMemberToFirebase(val);
 }
 selUser = val;
 document.getElementById('new-name').value = '';
