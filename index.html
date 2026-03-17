@@ -1256,7 +1256,6 @@ const em=end.getMonth()+1, ed=end.getDate();
 const yr=sCalWeekStart.getFullYear();
 document.getElementById('s-cal-month').textContent=`${yr}年 ${sm}/${sd}〜${sm!==em?em+'/':''}${ed}`;
 let html='';
-const yr=sCalWeekStart.getFullYear();
 const weekHolidays=Object.assign({},getJpHolidays(yr),getJpHolidays(yr+1));
 [0,1,2,3,4,5,6].forEach(i=>html+=`<div class="cal-dow ${i===0?'sun':i===6?'sat':''}">${WD[i]}</div>`);
 for(let i=0;i<7;i++){
