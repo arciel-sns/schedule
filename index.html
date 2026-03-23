@@ -787,7 +787,7 @@ input, select, textarea { font-size: 16px !important; } /* iOSズーム防止 */
 </div>
 <div class="ov" id="pw-ov"><div class="pw-modal"><div class="pw-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><h3>講師モード</h3><p>パスワードを入力してください</p><input type="password" id="pw-inp" placeholder="••••••" onkeydown="if(event.key==='Enter')doPwCheck()"/><div class="pw-err" id="pw-err"></div><div class="btn-row" style="justify-content:center;margin-top:16px"><button class="btn-s btn-sm" onclick="closePw()">キャンセル</button><button class="btn-a btn-sm" onclick="doPwCheck()">ログイン</button></div></div>
 </div>
-<div class="ov" id="resc-ov"><div class="modal" style="max-width:340px"><div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><div style="width:36px;height:36px;border-radius:50%;background:#fffbeb;border:1px solid rgba(217,119,6,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></div><div><h3 style="font-size:15px;margin:0">リスケ申請</h3><p style="font-size:11px;color:var(--sub);margin:2px 0 0" id="resc-modal-sub">予約の変更を依頼します</p></div></div><div id="resc-booking-info" style="background:var(--surface2);border-radius:var(--r-md);padding:10px 12px;margin-bottom:14px;font-size:12px;color:var(--sub);line-height:1.8"></div><div style="margin-bottom:12px"><label style="font-size:12px;font-weight:500;color:var(--sub);display:block;margin-bottom:6px">リスケの理由</label><select id="resc-reason" style="width:100%;padding:9px 10px;font-size:13px;font-family:inherit;border:1.5px solid var(--border-md);border-radius:var(--r-md);background:var(--surface);color:var(--text);outline:none"><option value="">選択してください</option><option value="体調不良">体調不良</option><option value="急な予定が入った">急な予定が入った</option><option value="仕事・業務の都合">仕事・業務の都合</option><option value="家庭の事情">家庭の事情</option><option value="講師側の都合">講師側の都合</option><option value="その他">その他</option></select></div><div style="margin-bottom:12px"><label style="font-size:12px;font-weight:500;color:var(--sub);display:block;margin-bottom:6px">希望する振替日（任意）</label><input type="date" id="resc-date" style="width:100%;padding:9px 10px;font-size:13px;font-family:inherit;border:1.5px solid var(--border-md);border-radius:var(--r-md);background:var(--surface);color:var(--text);outline:none"/></div><div style="margin-bottom:4px"><label style="font-size:12px;font-weight:500;color:var(--sub);display:block;margin-bottom:6px">コメント（任意）</label><textarea id="resc-comment" placeholder="例：来週以降でお願いできますか？" style="width:100%;padding:9px 10px;font-size:13px;font-family:inherit;border:1.5px solid var(--border-md);border-radius:var(--r-md);background:var(--surface);color:var(--text);outline:none;resize:none;height:72px;line-height:1.5"></textarea></div><div class="err" id="resc-err" style="font-size:12px;color:var(--red);min-height:16px;margin-top:4px"></div><div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px"><button class="btn-s btn-sm" onclick="closeRescDlg()">キャンセル</button><button style="padding:9px 20px;background:var(--amber);color:#fff;border:none;border-radius:var(--r-md);cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;transition:opacity .15s" onclick="doResc()">申請する</button></div></div>
+<div class="ov" id="resc-ov"><div class="modal" style="max-width:340px"><div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><div style="width:36px;height:36px;border-radius:50%;background:#fffbeb;border:1px solid rgba(217,119,6,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></div><div><h3 style="font-size:15px;margin:0">リスケ申請</h3><p style="font-size:11px;color:var(--sub);margin:2px 0 0" id="resc-modal-sub">予約の変更を依頼します</p></div></div><div id="resc-booking-info" style="background:var(--surface2);border-radius:var(--r-md);padding:10px 12px;margin-bottom:14px;font-size:12px;color:var(--sub);line-height:1.8"></div><div style="margin-bottom:12px"><label style="font-size:12px;font-weight:500;color:var(--sub);display:block;margin-bottom:6px">リスケの理由</label><select id="resc-reason" style="width:100%;padding:9px 10px;font-size:13px;font-family:inherit;border:1.5px solid var(--border-md);border-radius:var(--r-md);background:var(--surface);color:var(--text);outline:none"><option value="">選択してください</option><option value="体調不良">体調不良</option><option value="急な予定が入った">急な予定が入った</option><option value="仕事・業務の都合">仕事・業務の都合</option><option value="家庭の事情">家庭の事情</option><option value="講師側の都合">講師側の都合</option><option value="その他">その他</option></select></div><div style="margin-bottom:12px"><label style="font-size:12px;font-weight:500;color:var(--sub);display:block;margin-bottom:6px">希望する振替日（任意）</label><div style="background:var(--surface2);border:1px solid var(--border-md);border-radius:var(--r-md);padding:10px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><button onclick="rescCalPrev()" type="button" style="width:26px;height:26px;border:1px solid var(--border-md);border-radius:5px;background:transparent;cursor:pointer;font-size:15px;color:var(--sub);line-height:1">&#8249;</button><span id="resc-cal-month" style="font-size:12px;font-weight:700"></span><button onclick="rescCalNext()" type="button" style="width:26px;height:26px;border:1px solid var(--border-md);border-radius:5px;background:transparent;cursor:pointer;font-size:15px;color:var(--sub);line-height:1">&#8250;</button></div><div class="cal-grid" id="resc-cal-grid" style="gap:2px"></div></div><input type="hidden" id="resc-date"/></div><div id="resc-slot-wrap" style="margin-bottom:12px;display:none"><label style="font-size:12px;font-weight:500;color:var(--sub);display:block;margin-bottom:6px">希望する時間帯（任意）</label><select id="resc-slot" style="width:100%;padding:9px 10px;font-size:13px;font-family:inherit;border:1.5px solid var(--border-md);border-radius:var(--r-md);background:var(--surface);color:var(--text);outline:none"><option value="">&#9660; 時間帯を選んでください</option></select></div><div style="margin-bottom:4px"><label style="font-size:12px;font-weight:500;color:var(--sub);display:block;margin-bottom:6px">コメント（任意）</label><textarea id="resc-comment" placeholder="例：来週以降でお願いできますか？" style="width:100%;padding:9px 10px;font-size:13px;font-family:inherit;border:1.5px solid var(--border-md);border-radius:var(--r-md);background:var(--surface);color:var(--text);outline:none;resize:none;height:72px;line-height:1.5"></textarea></div><div class="err" id="resc-err" style="font-size:12px;color:var(--red);min-height:16px;margin-top:4px"></div><div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px"><button class="btn-s btn-sm" onclick="closeRescDlg()">キャンセル</button><button style="padding:9px 20px;background:var(--amber);color:#fff;border:none;border-radius:var(--r-md);cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;transition:opacity .15s" onclick="doResc()">申請する</button></div></div>
 </div>
 <div class="ov" id="bk-ov"><div class="modal"><h3 id="bk-modal-title">予約詳細</h3><div class="modal-rows" id="bk-modal-rows"></div><div class="modal-actions" id="bk-modal-actions"></div><button class="del-lnk" onclick="deleteBooking()">この予約を削除</button><div style="text-align:right;margin-top:8px"><button class="mab mab-close" style="min-width:auto;padding:7px 18px" onclick="closeBkModal()">閉じる</button></div></div>
 </div>
@@ -881,6 +881,8 @@ let selUser = null;
 let sCalView = 'month'; // 'month' | 'week'
 let sCalWeekStart = null; // Date of Sunday for week view
 let targetBkId = null;
+let rescCalY, rescCalM;
+let rescPrefDate = null;
 function dk(y,m,d){ return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`; }
 function getJpHolidays(year){
   const h={};
@@ -1078,13 +1080,16 @@ document.getElementById('student-view').style.display = 'block';
 document.getElementById('instructor-view').style.display = 'none';
 renderHeaderRight();
 }
+const LOCAL_NAMES_KEY = 'arciel_my_names';
+function getLocalNames(){ try{ return JSON.parse(localStorage.getItem(LOCAL_NAMES_KEY)||'[]'); }catch(e){ return []; } }
+function saveLocalNames(names){ try{ localStorage.setItem(LOCAL_NAMES_KEY, JSON.stringify(names)); }catch(e){} }
 function renderNamePanel(){
-const d = load();
+const localNames = getLocalNames();
 const el = document.getElementById('saved-chips');
 const nl = document.getElementById('new-label');
-if(d.members.length > 0){
+if(localNames.length > 0){
 nl.textContent = '登録済みの名前';
-el.innerHTML = d.members.map(n=>`
+el.innerHTML = localNames.map(n=>`
 <div style="display:flex;align-items:center;gap:4px">
 <div class="nchip${n===selUser?' sel':''}" onclick="selectName('${n}')" style="margin:0">${n}</div>
 ${n===selUser?`<button onclick="deleteMember('${n}')" title="削除" style="width:20px;height:20px;border-radius:50%;border:1px solid var(--border-md);background:transparent;cursor:pointer;font-size:11px;color:var(--hint);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;line-height:1" onmouseover="this.style.background='var(--red-lt)';this.style.color='var(--red)';this.style.borderColor='rgba(220,38,38,0.3)'" onmouseout="this.style.background='transparent';this.style.color='var(--hint)';this.style.borderColor='var(--border-md)'">✕</button>`:''}
@@ -1106,6 +1111,8 @@ d.bookings = d.bookings.filter(b=>b.user!==name);
 if(selUser===name){ selUser=null; renderHeaderRight(); }
 save(d);
 removeMemberFromDb(name);
+const ln = getLocalNames().filter(n=>n!==name);
+saveLocalNames(ln);
 renderNamePanel();
 }
 function selectName(name){
@@ -1122,6 +1129,8 @@ d.members.push(val);
 _cache = JSON.parse(JSON.stringify(d));
 }
 addMemberToDb(val);
+const ln = getLocalNames();
+if(!ln.includes(val)){ ln.push(val); saveLocalNames(ln); }
 selUser = val;
 document.getElementById('new-name').value = '';
 renderNamePanel();
@@ -1537,9 +1546,13 @@ document.getElementById('resc-booking-info').innerHTML =
 <div style="display:flex;justify-content:space-between"><span>日付</span><span style="color:var(--text)">${b.dateStr||b.date}</span></div>
 <div style="display:flex;justify-content:space-between"><span>時間帯</span><span style="color:var(--text)">${b.slotTime}</span></div>`;
 document.getElementById('resc-reason').value = '';
-document.getElementById('resc-date').value = '';
 document.getElementById('resc-comment').value = '';
 document.getElementById('resc-err').textContent = '';
+const _rNow=new Date(); rescCalY=_rNow.getFullYear(); rescCalM=_rNow.getMonth(); rescPrefDate=null;
+document.getElementById('resc-date').value='';
+document.getElementById('resc-slot').value='';
+document.getElementById('resc-slot-wrap').style.display='none';
+renderRescCal();
 document.getElementById('resc-ov').classList.add('open');
 }
 function closeRescDlg(){
@@ -1547,16 +1560,63 @@ document.getElementById('resc-ov').classList.remove('open');
 rescTargetId = null;
 rescBy = null;
 }
+function renderRescCal(){
+const today=new Date(); today.setHours(0,0,0,0);
+document.getElementById('resc-cal-month').textContent=`${rescCalY}年 ${MO[rescCalM]}`;
+const firstDay=new Date(rescCalY,rescCalM,1).getDay();
+const daysInMonth=new Date(rescCalY,rescCalM+1,0).getDate();
+let html='';
+[0,1,2,3,4,5,6].forEach(i=>html+=`<div class="cal-dow ${i===0?'sun':i===6?'sat':''}" style="font-size:9px;padding:2px 0">${WD[i]}</div>`);
+for(let i=0;i<firstDay;i++)html+=`<div style="aspect-ratio:1;min-height:0"></div>`;
+for(let day=1;day<=daysInMonth;day++){
+const date=new Date(rescCalY,rescCalM,day);
+const dow=date.getDay();
+const dkey=dk(rescCalY,rescCalM,day);
+const isPast=date<today;
+const hasSlots=getAvailSlots(dkey).length>0&&!isPast;
+const isSel=rescPrefDate===dkey;
+let cls='cal-day';
+if(dow===0)cls+=' sun-day'; if(dow===6)cls+=' sat-day';
+if(isPast)cls+=' past'; else if(!hasSlots)cls+=' no-slot'; else cls+=' clickable';
+if(isSel)cls+=' sel';
+html+=`<div class="${cls}" style="font-size:11px"${hasSlots?` onclick="rescSel('${dkey}')"`:''}><span class="dnum">${day}</span></div>`;
+}
+document.getElementById('resc-cal-grid').innerHTML=html;
+}
+function rescCalPrev(){rescCalM--;if(rescCalM<0){rescCalM=11;rescCalY--;}renderRescCal();}
+function rescCalNext(){rescCalM++;if(rescCalM>11){rescCalM=0;rescCalY++;}renderRescCal();}
+function rescSel(dkey){
+rescPrefDate=dkey;
+document.getElementById('resc-date').value=dkey;
+renderRescCal();
+renderRescSlots();
+}
+function renderRescSlots(){
+const wrap=document.getElementById('resc-slot-wrap');
+if(!rescPrefDate){wrap.style.display='none';return;}
+const avail=getAvailSlots(rescPrefDate,true).filter(s=>!s.hasSubSlots);
+if(avail.length===0){wrap.style.display='none';return;}
+wrap.style.display='';
+const sel=document.getElementById('resc-slot');
+let opts='<option value="">▼ 時間帯を選んでください</option>';
+avail.forEach(s=>{
+const parentLabel=s.parent?` (${SLOT_DEFS.find(x=>x.id===s.parent).time}のうち)`:'';
+opts+=`<option value="${s.id}">${s.time}${parentLabel}</option>`;
+});
+sel.innerHTML=opts;
+}
 function doResc(){
 const reason = document.getElementById('resc-reason').value;
 if(!reason){ document.getElementById('resc-err').textContent = '理由を選択してください'; return; }
 const preferredDate = document.getElementById('resc-date').value;
+const preferredSlotId = document.getElementById('resc-slot').value;
+const preferredSlotTime = preferredSlotId ? (SLOT_DEFS.find(s=>s.id===preferredSlotId)||{}).time||'' : '';
 const comment = document.getElementById('resc-comment').value.trim();
 const d = load();
 const b = d.bookings.find(x=>x.id===rescTargetId);
 if(!b) return;
 b.status = 'reschedule';
-b.reschedule = { reason, preferredDate, comment, by: rescBy, at: new Date().toISOString() };
+b.reschedule = { reason, preferredDate, preferredSlotId, preferredSlotTime, comment, by: rescBy, at: new Date().toISOString() };
 save(d);
 closeRescDlg();
 if(rescBy==='instructor'){
@@ -1832,6 +1892,13 @@ acts=`<button class="mab mab-ok" onclick="updBk('confirmed')">承諾して確定
 acts=`<button class="mab mab-ng" onclick="closeBkModal();openRescDlg('${id}','instructor')">リスケを依頼</button>
 <button class="mab mab-back" onclick="updBk('pending')">承諾待ちに戻す</button>`;
 } else {
+let _newSchedBox='';
+if(b.reschedule&&b.reschedule.preferredDate&&b.reschedule.preferredSlotId){
+const _p=b.reschedule.preferredDate.split('-');
+const _nd=new Date(+_p[0],+_p[1]-1,+_p[2]);
+const _nds=`${+_p[0]}年${+_p[1]}月${+_p[2]}日（${WD[_nd.getDay()]}）`;
+_newSchedBox=`<div style="margin-top:10px;padding:8px 10px;background:var(--green-lt);border:1px solid rgba(5,150,105,0.25);border-radius:var(--r-md);font-size:12px"><span style="font-weight:700;color:var(--green)">✓ 確定後の新日程：</span><span style="color:var(--text)">${_nds}　${b.reschedule.preferredSlotTime||''}</span></div>`;
+}
 const rescInfo=b.reschedule?`<div style="margin-bottom:10px;padding:12px 14px;background:var(--amber-lt);border:1px solid rgba(217,119,6,0.25);border-radius:var(--r-md)">
 <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
@@ -1841,11 +1908,13 @@ const rescInfo=b.reschedule?`<div style="margin-bottom:10px;padding:12px 14px;ba
 <table style="width:100%;font-size:12px;border-collapse:collapse">
 <tr><td style="color:var(--sub);padding:3px 0;width:60px;vertical-align:top">理由</td><td style="font-weight:500;padding:3px 0">${b.reschedule.reason||'—'}</td></tr>
 <tr><td style="color:var(--sub);padding:3px 0;vertical-align:top">希望日</td><td style="font-weight:500;padding:3px 0">${b.reschedule.preferredDate||'未指定'}</td></tr>
+${b.reschedule.preferredSlotTime?`<tr><td style="color:var(--sub);padding:3px 0;vertical-align:top">希望時間</td><td style="font-weight:500;padding:3px 0">${b.reschedule.preferredSlotTime}</td></tr>`:''}
 ${b.reschedule.comment?`<tr><td style="color:var(--sub);padding:3px 0;vertical-align:top">コメント</td><td style="padding:3px 0">${b.reschedule.comment}</td></tr>`:''}
 </table>
+${_newSchedBox}
 </div>`:'';
 document.getElementById('bk-modal-rows').innerHTML+=rescInfo;
-acts=`<button class="mab mab-ok" onclick="updBk('confirmed')">確定済みに変更</button>
+acts=`<button class="mab mab-ok" onclick="updBk('confirmed')">${b.reschedule&&b.reschedule.preferredDate&&b.reschedule.preferredSlotId?'新日程で確定する':'確定済みに変更'}</button>
 <button class="mab mab-back" onclick="updBk('pending')">承諾待ちに戻す</button>`;
 }
 document.getElementById('bk-modal-actions').innerHTML=acts;
@@ -1856,7 +1925,24 @@ function updBk(status){
 if(!targetBkId) return;
 const d=load();
 const b=d.bookings.find(x=>x.id===targetBkId);
-if(b){ b.status=status; save(d); }
+if(!b) return;
+if(b.status==='reschedule'&&status==='confirmed'&&b.reschedule&&b.reschedule.preferredDate&&b.reschedule.preferredSlotId){
+const resc=b.reschedule;
+const _p=resc.preferredDate.split('-');
+const _nd=new Date(+_p[0],+_p[1]-1,+_p[2]);
+const _nds=`${+_p[0]}年${+_p[1]}月${+_p[2]}日（${WD[_nd.getDay()]}）`;
+const _ns=SLOT_DEFS.find(s=>s.id===resc.preferredSlotId);
+d.bookings=d.bookings.filter(x=>x.id!==targetBkId);
+d.bookings.push({id:Date.now().toString(),user:b.user,date:resc.preferredDate,dateStr:_nds,slotId:resc.preferredSlotId,slotTime:_ns?_ns.time:resc.preferredSlotId,status:'confirmed',createdAt:new Date().toISOString()});
+save(d);
+closeBkModal();
+showToast(`変更後の日程を確定：${_nds}　${_ns?_ns.time:''}`, 't-success');
+renderInstStats();
+renderInstCalendar();
+if(document.getElementById('itab-members').style.display!=='none') renderMembers();
+return;
+}
+b.status=status; save(d);
 closeBkModal();
 showToast(status==='confirmed'?'予約を確定しました ✓' : status==='pending'?'承諾待ちに戻しました':'ステータスを更新しました', status==='confirmed'?'t-success':'t-info');
 renderInstStats();
