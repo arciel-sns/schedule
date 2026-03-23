@@ -1996,6 +1996,7 @@ return `<div class="mc-bk-item" style="flex-wrap:wrap;row-gap:4px;${hasResc?'bor
 <span class="mc-bk-date">${b.dateStr||b.date}</span>
 <span class="mc-bk-time">${b.slotTime||''}</span>
 <span class="mchip ${sbc[b.status]}" style="font-size:10px;padding:2px 8px">${slbl[b.status]}</span>
+<button onclick="openBkModal('${b.id}')" class="iab ${b.status==='pending'?'iab-ok':b.status==='reschedule'?'iab-ng':'iab-sub'}" style="margin-left:auto;font-size:11px">${b.status==='pending'?'承諾する':b.status==='reschedule'?'リスケ確認':'詳細'}</button>
 ${hasResc?`<div style="width:100%;font-size:11px;color:var(--amber);line-height:1.7;margin-top:2px"><span style="font-weight:700">理由：</span>${b.reschedule.reason||'なし'}${b.reschedule.preferredDate?'　<span style="font-weight:700">希望日：</span>'+b.reschedule.preferredDate:''}${b.reschedule.comment?'　'+b.reschedule.comment:''}<span style="opacity:.65;margin-left:6px">（${b.reschedule.by==='instructor'?'講師':'受講者'}より）</span></div>`:''}
 </div>`;
 }).join('');
