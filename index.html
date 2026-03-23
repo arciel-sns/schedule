@@ -1600,8 +1600,7 @@ wrap.style.display='';
 const sel=document.getElementById('resc-slot');
 let opts='<option value="">▼ 時間帯を選んでください</option>';
 avail.forEach(s=>{
-const parentLabel=s.parent?` (${SLOT_DEFS.find(x=>x.id===s.parent).time}のうち)`:'';
-opts+=`<option value="${s.id}">${s.time}${parentLabel}</option>`;
+opts+=`<option value="${s.id}">${s.time}</option>`;
 });
 sel.innerHTML=opts;
 }
