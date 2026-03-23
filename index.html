@@ -1189,7 +1189,15 @@ const date = new Date(+parts[0], +parts[1]-1, +parts[2]);
 const dow = date.getDay();
 const blocked = d.blocked[dateKey]||[];
 const pool = includeSubSlots ? SLOT_DEFS : TOP_SLOTS;
-return pool.filter(s=> s.wd.includes(dow) && !blocked.includes(s.id));
+return pool.filter(s=>{
+if(!s.wd.includes(dow)) return false;
+if(blocked.includes(s.id)) return false;
+if(s.hasSubSlots){
+const subs=SLOT_DEFS.filter(x=>x.parent===s.id);
+if(subs.length>0&&subs.every(x=>blocked.includes(x.id))) return false;
+}
+return true;
+});
 }
 function isParentFullyBlocked(dateKey, parentId){
 const d = load(); const blocked = d.blocked[dateKey]||[];
@@ -1221,6 +1229,8 @@ const dayBks=d.bookings.filter(b=>b.date===dkey&&b.status!=='reschedule');
 const hasPending=dayBks.some(b=>b.status==='pending');
 const hasConfirmed=dayBks.some(b=>b.status==='confirmed');
 const holName=holidays[dkey];
+const dowSlots=TOP_SLOTS.filter(s=>s.wd.includes(dow));
+const isInstructorBlocked=!isPast&&dowSlots.length>0&&avail.length===0;
 let cls='cal-day';
 if(dow===0||holName)cls+=' hol-day'; else if(dow===6)cls+=' sat-day';
 if(isPast)cls+=' past'; else if(!hasSlots)cls+=' no-slot'; else cls+=' clickable';
@@ -1228,7 +1238,8 @@ if(isToday)cls+=' today-ring';
 if(isSel)cls+=' sel';
 let dots='';
 if(!isPast&&hasSlots){ if(hasPending)dots+=`<div class="cal-dot dot-amber"></div>`; if(hasConfirmed)dots+=`<div class="cal-dot dot-green"></div>`; }
-html+=`<div class="${cls}"${hasSlots&&!isPast?` onclick="sSel('${dkey}')"`:''}><span class="dnum">${day}</span>${holName?`<span class="cal-hol-badge">祝</span>`:''}<div class="cal-dot-row">${dots}</div></div>`;
+const blockedChip=isInstructorBlocked?`<div class="mini-chips"><div class="mchip mchip-block">不可</div></div>`:'';
+html+=`<div class="${cls}" style="${isInstructorBlocked?'position:relative;':''}"${hasSlots&&!isPast?` onclick="sSel('${dkey}')"`:''}><span class="dnum">${day}</span>${holName?`<span class="cal-hol-badge">祝</span>`:''}<div class="cal-dot-row">${dots}</div>${blockedChip}</div>`;
 }
 document.getElementById('s-cal-grid').innerHTML=html;
 document.getElementById('btn-next-cal').disabled=!selDate;
@@ -1272,6 +1283,8 @@ const dayBks=d.bookings.filter(b=>b.date===dkey&&b.status!=='reschedule');
 const hasPending=dayBks.some(b=>b.status==='pending');
 const hasConfirmed=dayBks.some(b=>b.status==='confirmed');
 const holName=weekHolidays[dkey];
+const wkDownSlots=TOP_SLOTS.filter(s=>s.wd.includes(dow));
+const wkInstructorBlocked=!isPast&&wkDownSlots.length>0&&avail.length===0;
 let cls='cal-day cal-day-week';
 if(dow===0||holName)cls+=' hol-day'; else if(dow===6)cls+=' sat-day';
 if(isPast)cls+=' past'; else if(!hasSlots)cls+=' no-slot'; else cls+=' clickable';
@@ -1281,7 +1294,8 @@ let dots='';
 if(!isPast&&hasSlots){ if(hasPending)dots+=`<div class="cal-dot dot-amber"></div>`; if(hasConfirmed)dots+=`<div class="cal-dot dot-green"></div>`; }
 const slotInfo=hasSlots?`<div style="font-size:10px;margin-top:4px;opacity:0.65;font-weight:500">${avail.length}枠</div>`:'';
 const holLabel=holName?`<div class="cal-hol-lbl">${holName}</div>`:'';
-html+=`<div class="${cls}"${hasSlots&&!isPast?` onclick="sSel('${dkey}')"`:''}><span class="dnum">${date.getDate()}</span>${holLabel}${slotInfo}<div class="cal-dot-row" style="margin-top:5px">${dots}</div></div>`;
+const wkBlockedChip=wkInstructorBlocked?`<div class="mini-chips"><div class="mchip mchip-block">不可</div></div>`:'';
+html+=`<div class="${cls}" style="${wkInstructorBlocked?'position:relative;':''}"${hasSlots&&!isPast?` onclick="sSel('${dkey}')"`:''}><span class="dnum">${date.getDate()}</span>${holLabel}${slotInfo}<div class="cal-dot-row" style="margin-top:5px">${dots}</div>${wkBlockedChip}</div>`;
 }
 document.getElementById('s-cal-grid').innerHTML=html;
 document.getElementById('btn-next-cal').disabled=!selDate;
@@ -1304,7 +1318,10 @@ const dow=date.getDay();
 const dateStr=`${+parts[0]}年${+parts[1]}月${+parts[2]}日（${WD[dow]}）`;
 document.getElementById('date-badge-text').textContent=dateStr;
 const avail=getAvailSlots(selDate, false);
-if(avail.length===0){ document.getElementById('slot-list').innerHTML=`<div class="empty-state">この日は受講できる時間帯がありません</div>`; return; }
+if(avail.length===0){
+const hasSchedule=TOP_SLOTS.filter(s=>s.wd.includes(dow)).length>0;
+const msg=hasSchedule?'この日は受講不可に設定されています':'この日は受講できる時間帯がありません';
+document.getElementById('slot-list').innerHTML=`<div class="empty-state">${msg}</div>`; return; }
 let html='';
 avail.forEach(s=>{
 if(s.hasSubSlots){
@@ -1326,14 +1343,15 @@ opts+=`<option value="${sub.id}"${selSlot===sub.id?' selected':''}>${sub.time}</
 }
 });
 if(allTaken){
+const allBlockedMsg=subs.length===0;
 html+=`<div class="slot-opt blocked" style="opacity:.45;cursor:not-allowed">
 <div class="slot-radio" style="opacity:.5"></div>
 <div class="slot-body" style="flex:1">
 <div class="slot-time">${s.time}</div>
 <div class="slot-note">${s.note}</div>
-<div style="margin-top:8px;font-size:12px;color:var(--red);font-weight:500">この時間帯は全枠予約済みです</div>
+<div style="margin-top:8px;font-size:12px;color:var(--red);font-weight:500">${allBlockedMsg?'この時間帯は受講不可に設定されています':'この時間帯は全枠予約済みです'}</div>
 </div>
-<span class="slot-count amber" style="align-self:flex-start;margin-top:2px">満枠</span>
+<span class="slot-count amber" style="align-self:flex-start;margin-top:2px">${allBlockedMsg?'受講不可':'満枠'}</span>
 </div>`;
 } else {
 html+=`<div class="slot-opt${parentSel?' sel':''}" id="slot-opt-${s.id}">
@@ -1630,6 +1648,7 @@ return blocked.includes(s.id);
 const pending=dayBks.filter(b=>b.status==='pending').length;
 const confirmed=dayBks.filter(b=>b.status==='confirmed').length;
 const holName=iHolidays[dkey];
+const reschedule=dayBks.filter(b=>b.status==='reschedule').length;
 let cls='cal-day clickable';
 if(dow===0||holName)cls+=' hol-day'; else if(dow===6)cls+=' sat-day';
 if(isPast)cls+=' past';
@@ -1642,6 +1661,7 @@ if(allBlocked) chips+=`<div class="mchip mchip-block">不可</div>`;
 else{
 if(confirmed) chips+=`<div class="mchip mchip-c">確定${confirmed}</div>`;
 if(pending) chips+=`<div class="mchip mchip-p">待${pending}</div>`;
+if(reschedule) chips+=`<div class="mchip mchip-r">リスケ${reschedule}</div>`;
 }
 }
 html+=`<div class="${cls}" style="min-height:52px;position:relative;padding:4px" onclick="iSel('${dkey}')">
@@ -1662,7 +1682,12 @@ const dow=date.getDay();
 const dateStr=`${+parts[1]}月${+parts[2]}日（${WD[dow]}）`;
 const avail=TOP_SLOTS.filter(s=>s.wd.includes(dow));
 const blocked=d.blocked[iSelDate]||[];
-let html=`<div class="idd-header"><span>${dateStr}</span></div>`;
+const ddBks=d.bookings.filter(b=>b.date===iSelDate);
+const ddC=ddBks.filter(b=>b.status==='confirmed').length;
+const ddP=ddBks.filter(b=>b.status==='pending').length;
+const ddR=ddBks.filter(b=>b.status==='reschedule').length;
+const ddBadges=(ddC||ddP||ddR)?`<div style="display:flex;gap:4px;flex-wrap:wrap">${ddC?`<span class="mchip mchip-c" style="font-size:10px;padding:2px 8px">確定 ${ddC}</span>`:''}${ddP?`<span class="mchip mchip-p" style="font-size:10px;padding:2px 8px">待ち ${ddP}</span>`:''}${ddR?`<span class="mchip mchip-r" style="font-size:10px;padding:2px 8px">リスケ ${ddR}</span>`:''}</div>`:'';
+let html=`<div class="idd-header"><span>${dateStr}</span>${ddBadges}</div>`;
 if(avail.length===0){
 html+=`<div class="no-date-msg" style="padding:20px">この曜日は受講日ではありません</div>`;
 } else {
@@ -1899,13 +1924,13 @@ ${pend?`<span class="pill pill-amber">待ち ${pend}</span>`:''}
 ${resc?`<span class="pill pill-red">リスケ ${resc}</span>`:''}
 </div>
 ${total===0?`<span class="warn-badge">⚠ 予約なし</span>`:''}
-${total>0?`<button class="toggle-bk-btn" onclick="toggleMcBooks(${idx})">予約を見る</button>`:''}
+${total>0?`<button class="toggle-bk-btn" id="mc-btn-${idx}" onclick="toggleMcBooks(${idx})">予約を見る ▼</button>`:''}
 </div>
 <div class="mc-books" id="mc-bk-${idx}">${bksHtml}</div>
 </div>`;
 }).join('');
 }
-function toggleMcBooks(idx){ document.getElementById('mc-bk-'+idx).classList.toggle('open'); }
+function toggleMcBooks(idx){ const el=document.getElementById('mc-bk-'+idx); const btn=document.getElementById('mc-btn-'+idx); el.classList.toggle('open'); if(btn) btn.textContent=el.classList.contains('open')?'閉じる ▲':'予約を見る ▼'; }
 function showToast(msg, type='t-info'){
 let wrap = document.getElementById('toast-wrap');
 if(!wrap){ wrap = document.createElement('div'); wrap.id='toast-wrap'; wrap.className='toast-wrap'; document.body.appendChild(wrap); }
