@@ -1491,12 +1491,24 @@ const list=d.bookings.filter(b=>b.user===selUser).sort((a,b2)=>a.date.localeComp
 const el=document.getElementById('my-bookings-list');
 if(!list.length){ el.innerHTML=`<div class="empty-state">まだ予約がありません</div>`; }
 else { el.innerHTML=list.map(b=>{
-const rescInfo = b.reschedule ? `<div style="width:100%;margin-top:6px;padding:7px 10px;background:var(--amber-lt);border:1px solid rgba(217,119,6,0.2);border-radius:var(--r-md);font-size:11px;color:var(--amber)">
+const isInstResc = b.reschedule && b.reschedule.by === 'instructor';
+const hasStudentReply = isInstResc && b.reschedule.studentReplyAt;
+const rescInfo = b.reschedule ? (isInstResc
+? `<div style="width:100%;margin-top:6px;padding:8px 12px;background:#fef3c7;border:1px solid rgba(217,119,6,0.35);border-radius:var(--r-md);font-size:11px;color:var(--amber)">
+<div style="font-weight:700;margin-bottom:4px">📅 講師からリスケ依頼が届いています</div>
+${b.reschedule.reason?`<div style="margin-bottom:2px">理由：${b.reschedule.reason}</div>`:''}
+${b.reschedule.comment?`<div style="margin-bottom:2px">コメント：${b.reschedule.comment}</div>`:''}
+${hasStudentReply&&b.reschedule.preferredDate?`<div style="margin-top:4px;color:var(--green);font-weight:600">提案済み：${b.reschedule.preferredDate}${b.reschedule.preferredSlotTime?' '+b.reschedule.preferredSlotTime:''}</div><div style="font-size:10px;color:var(--sub)">講師の承認をお待ちください</div>`:''}
+</div>`
+: `<div style="width:100%;margin-top:6px;padding:7px 10px;background:var(--amber-lt);border:1px solid rgba(217,119,6,0.2);border-radius:var(--r-md);font-size:11px;color:var(--amber)">
 リスケ申請中${b.reschedule.reason?' — '+b.reschedule.reason:''}${b.reschedule.preferredDate?' （希望日：'+b.reschedule.preferredDate+'）':''}
-</div>` : '';
+</div>`)
+: '';
 const rescBtn = b.status!=='reschedule'
 ? `<button onclick="openRescDlg('${b.id}','student')" style="padding:4px 12px;font-size:11px;font-family:'Noto Sans JP',sans-serif;background:transparent;border:1px solid rgba(217,119,6,0.35);border-radius:20px;cursor:pointer;color:var(--amber);transition:all .15s;white-space:nowrap" onmouseover="this.style.background='var(--amber-lt)'" onmouseout="this.style.background='transparent'">リスケ申請</button>`
-: '';
+: (isInstResc && !hasStudentReply
+? `<button onclick="openRescDlg('${b.id}','student-reply')" style="padding:4px 12px;font-size:11px;font-family:'Noto Sans JP',sans-serif;background:transparent;border:1px solid rgba(217,119,6,0.35);border-radius:20px;cursor:pointer;color:var(--amber);transition:all .15s;white-space:nowrap" onmouseover="this.style.background='var(--amber-lt)'" onmouseout="this.style.background='transparent'">振替日を提案する</button>`
+: '');
 const cancelBtn = b.status==='pending'
 ? `<button onclick="openCancelDlg('${b.id}')" style="padding:4px 12px;font-size:11px;font-family:'Noto Sans JP',sans-serif;background:transparent;border:1px solid rgba(220,38,38,0.3);border-radius:20px;cursor:pointer;color:var(--red);transition:all .15s;white-space:nowrap" onmouseover="this.style.background='var(--red-lt)'" onmouseout="this.style.background='transparent'">キャンセル</button>`
 : '';
@@ -1540,13 +1552,18 @@ const d = load();
 const b = d.bookings.find(x=>x.id===bookingId);
 if(!b) return;
 document.getElementById('resc-modal-sub').textContent =
-by==='instructor' ? '講師からリスケを依頼します' : '受講者からリスケを申請します';
+by==='instructor' ? '講師からリスケを依頼します' : by==='student-reply' ? '振替日を提案してください' : '受講者からリスケを申請します';
 document.getElementById('resc-booking-info').innerHTML =
 `<div style="display:flex;justify-content:space-between"><span>受講者</span><span style="color:var(--text);font-weight:500">${b.user}</span></div>
 <div style="display:flex;justify-content:space-between"><span>日付</span><span style="color:var(--text)">${b.dateStr||b.date}</span></div>
 <div style="display:flex;justify-content:space-between"><span>時間帯</span><span style="color:var(--text)">${b.slotTime}</span></div>`;
+if(by==='student-reply' && b.reschedule){
+document.getElementById('resc-reason').value = b.reschedule.reason||'';
+document.getElementById('resc-comment').value = '';
+} else {
 document.getElementById('resc-reason').value = '';
 document.getElementById('resc-comment').value = '';
+}
 document.getElementById('resc-err').textContent = '';
 const _rNow=new Date(); rescCalY=_rNow.getFullYear(); rescCalM=_rNow.getMonth(); rescPrefDate=null;
 document.getElementById('resc-date').value='';
@@ -1615,7 +1632,11 @@ const d = load();
 const b = d.bookings.find(x=>x.id===rescTargetId);
 if(!b) return;
 b.status = 'reschedule';
+if(rescBy==='student-reply' && b.reschedule && b.reschedule.by==='instructor'){
+b.reschedule = { ...b.reschedule, preferredDate, preferredSlotId, preferredSlotTime, studentComment: comment, studentReplyAt: new Date().toISOString() };
+} else {
 b.reschedule = { reason, preferredDate, preferredSlotId, preferredSlotTime, comment, by: rescBy, at: new Date().toISOString() };
+}
 save(d);
 closeRescDlg();
 if(rescBy==='instructor'){
