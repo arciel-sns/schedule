@@ -762,6 +762,20 @@ input, select, textarea { font-size: 16px !important; } /* iOSズーム防止 */
 .cal-day.past .cal-hol-lbl { opacity: 0.4; }
 .cal-day.sel .cal-hol-lbl { color: rgba(255,255,255,0.85); }
 .mchip-hol { background: rgba(239,68,68,0.1); color: #ef4444; }
+/* ── Member delete button ── */
+.mc-del-btn {
+  width: 30px; height: 30px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--border-md);
+  background: transparent;
+  color: var(--hint);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: all .15s;
+  margin-left: 4px;
+}
+.mc-del-btn:hover { background: var(--red-lt); color: var(--red); border-color: rgba(220,38,38,.3); }
 </style>
 
 </head>
@@ -790,6 +804,26 @@ input, select, textarea { font-size: 16px !important; } /* iOSズーム防止 */
 <div class="ov" id="resc-ov"><div class="modal" style="max-width:340px"><div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><div style="width:36px;height:36px;border-radius:50%;background:#fffbeb;border:1px solid rgba(217,119,6,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></div><div><h3 style="font-size:15px;margin:0">リスケ申請</h3><p style="font-size:11px;color:var(--sub);margin:2px 0 0" id="resc-modal-sub">予約の変更を依頼します</p></div></div><div id="resc-booking-info" style="background:var(--surface2);border-radius:var(--r-md);padding:10px 12px;margin-bottom:14px;font-size:12px;color:var(--sub);line-height:1.8"></div><div style="margin-bottom:12px"><label style="font-size:12px;font-weight:500;color:var(--sub);display:block;margin-bottom:6px">リスケの理由</label><select id="resc-reason" style="width:100%;padding:9px 10px;font-size:13px;font-family:inherit;border:1.5px solid var(--border-md);border-radius:var(--r-md);background:var(--surface);color:var(--text);outline:none"><option value="">選択してください</option><option value="体調不良">体調不良</option><option value="急な予定が入った">急な予定が入った</option><option value="仕事・業務の都合">仕事・業務の都合</option><option value="家庭の事情">家庭の事情</option><option value="講師側の都合">講師側の都合</option><option value="その他">その他</option></select></div><div style="margin-bottom:12px"><label style="font-size:12px;font-weight:500;color:var(--sub);display:block;margin-bottom:6px">希望する振替日（任意）</label><div style="background:var(--surface2);border:1px solid var(--border-md);border-radius:var(--r-md);padding:10px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><button onclick="rescCalPrev()" type="button" style="width:26px;height:26px;border:1px solid var(--border-md);border-radius:5px;background:transparent;cursor:pointer;font-size:15px;color:var(--sub);line-height:1">&#8249;</button><span id="resc-cal-month" style="font-size:12px;font-weight:700"></span><button onclick="rescCalNext()" type="button" style="width:26px;height:26px;border:1px solid var(--border-md);border-radius:5px;background:transparent;cursor:pointer;font-size:15px;color:var(--sub);line-height:1">&#8250;</button></div><div class="cal-grid" id="resc-cal-grid" style="gap:2px"></div></div><input type="hidden" id="resc-date"/></div><div id="resc-slot-wrap" style="margin-bottom:12px;display:none"><label style="font-size:12px;font-weight:500;color:var(--sub);display:block;margin-bottom:6px">希望する時間帯（任意）</label><select id="resc-slot" style="width:100%;padding:9px 10px;font-size:13px;font-family:inherit;border:1.5px solid var(--border-md);border-radius:var(--r-md);background:var(--surface);color:var(--text);outline:none"><option value="">&#9660; 時間帯を選んでください</option></select></div><div style="margin-bottom:4px"><label style="font-size:12px;font-weight:500;color:var(--sub);display:block;margin-bottom:6px">コメント（任意）</label><textarea id="resc-comment" placeholder="例：来週以降でお願いできますか？" style="width:100%;padding:9px 10px;font-size:13px;font-family:inherit;border:1.5px solid var(--border-md);border-radius:var(--r-md);background:var(--surface);color:var(--text);outline:none;resize:none;height:72px;line-height:1.5"></textarea></div><div class="err" id="resc-err" style="font-size:12px;color:var(--red);min-height:16px;margin-top:4px"></div><div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px"><button class="btn-s btn-sm" onclick="closeRescDlg()">キャンセル</button><button style="padding:9px 20px;background:var(--amber);color:#fff;border:none;border-radius:var(--r-md);cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;transition:opacity .15s" onclick="doResc()">申請する</button></div></div>
 </div>
 <div class="ov" id="bk-ov"><div class="modal"><h3 id="bk-modal-title">予約詳細</h3><div class="modal-rows" id="bk-modal-rows"></div><div class="modal-actions" id="bk-modal-actions"></div><button class="del-lnk" onclick="deleteBooking()">この予約を削除</button><div style="text-align:right;margin-top:8px"><button class="mab mab-close" style="min-width:auto;padding:7px 18px" onclick="closeBkModal()">閉じる</button></div></div>
+</div>
+<div class="ov" id="del-member-ov">
+  <div class="modal">
+    <div id="del-step1">
+      <h3>受講者を削除</h3>
+      <p class="modal-sub">「<strong id="del-name-s1"></strong>」を受講者一覧から削除しますか？<br>その方の予約データもすべて削除されます。</p>
+      <div class="modal-actions">
+        <button class="mab mab-close" onclick="closeDeleteMemberModal()">キャンセル</button>
+        <button class="mab" style="background:var(--amber-lt);color:var(--amber);border-color:rgba(217,119,6,.3)" onclick="delMemberStep2()">次へ →</button>
+      </div>
+    </div>
+    <div id="del-step2" style="display:none">
+      <h3 style="color:var(--red)">本当に削除しますか？</h3>
+      <p class="modal-sub">「<strong id="del-name-s2"></strong>」のすべてのデータを完全に削除します。<br><strong style="color:var(--red)">この操作は取り消せません。</strong></p>
+      <div class="modal-actions">
+        <button class="mab mab-close" onclick="closeDeleteMemberModal()">キャンセル</button>
+        <button class="mab mab-ng" onclick="execDeleteMember()">削除する</button>
+      </div>
+    </div>
+  </div>
 </div>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
@@ -2032,10 +2066,40 @@ ${resc?`<span class="pill pill-red">リスケ ${resc}</span>`:''}
 </div>
 ${total===0?`<span class="warn-badge">⚠ 予約なし</span>`:''}
 ${total>0?`<button class="toggle-bk-btn" id="mc-btn-${idx}" onclick="toggleMcBooks(${idx})">予約を見る ▼</button>`:''}
+<button class="mc-del-btn" onclick="openDeleteMemberModal('${name.replace(/'/g,"\\'")}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
 </div>
 <div class="mc-books" id="mc-bk-${idx}">${bksHtml}</div>
 </div>`;
 }).join('');
+}
+let _delMemberName = null;
+function openDeleteMemberModal(name){
+  _delMemberName = name;
+  document.getElementById('del-name-s1').textContent = name;
+  document.getElementById('del-name-s2').textContent = name;
+  document.getElementById('del-step1').style.display = '';
+  document.getElementById('del-step2').style.display = 'none';
+  document.getElementById('del-member-ov').classList.add('open');
+}
+function closeDeleteMemberModal(){
+  document.getElementById('del-member-ov').classList.remove('open');
+  _delMemberName = null;
+}
+function delMemberStep2(){
+  document.getElementById('del-step1').style.display = 'none';
+  document.getElementById('del-step2').style.display = '';
+}
+function execDeleteMember(){
+  if(!_delMemberName) return;
+  const d = load();
+  d.members = d.members.filter(m => m !== _delMemberName);
+  d.bookings = d.bookings.filter(b => b.user !== _delMemberName);
+  if(selUser === _delMemberName){ selUser = null; renderHeaderRight(); }
+  save(d);
+  closeDeleteMemberModal();
+  showToast(`${_delMemberName} を削除しました`, 't-info');
+  renderInstStats();
+  renderMembers();
 }
 function toggleMcBooks(idx){ const el=document.getElementById('mc-bk-'+idx); const btn=document.getElementById('mc-btn-'+idx); el.classList.toggle('open'); if(btn) btn.textContent=el.classList.contains('open')?'閉じる ▲':'予約を見る ▼'; }
 function showToast(msg, type='t-info'){
