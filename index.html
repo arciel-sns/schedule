@@ -2117,6 +2117,17 @@ setTimeout(()=>{ t.classList.remove('show'); setTimeout(()=>t.remove(), 400); },
 }
 init();
 (function(){
+const _CURRENT_VER = '1774880322';
+function _checkVersion(){
+  fetch('version.txt?t='+Date.now())
+    .then(r=>r.text())
+    .then(v=>{
+      if(v.trim() && v.trim()!==_CURRENT_VER){ location.reload(true); }
+    }).catch(()=>{});
+}
+setInterval(_checkVersion, 3*60*1000);
+})();
+(function(){
 const splash = document.getElementById('splash');
 const page = document.getElementById('main-page');
 setTimeout(function(){
