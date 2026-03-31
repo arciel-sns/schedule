@@ -2099,6 +2099,7 @@ function execDeleteMember(){
   d.bookings = d.bookings.filter(b => b.user !== _delMemberName);
   if(selUser === _delMemberName){ selUser = null; renderHeaderRight(); }
   save(d);
+  removeMemberFromDb(_delMemberName);
   closeDeleteMemberModal();
   showToast(`${_delMemberName} を削除しました`, 't-info');
   renderInstStats();
@@ -2117,7 +2118,7 @@ setTimeout(()=>{ t.classList.remove('show'); setTimeout(()=>t.remove(), 400); },
 }
 init();
 (function(){
-const _CURRENT_VER = '1774880322';
+const _CURRENT_VER = '1774961324';
 function _checkVersion(){
   fetch('version.txt?t='+Date.now())
     .then(r=>r.text())
