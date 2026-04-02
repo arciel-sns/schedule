@@ -896,6 +896,10 @@ _firebaseDb.ref(DB_PATH+'/members/'+encodeFirebaseKey(name)).remove()
 }
 const SLOT_DEFS = [
 { id:'morning', time:'9:00〜9:30', note:'※お子様が在宅のため声が入る可能性あり', wd:[1,2,3,4,5] },
+{ id:'lunch', time:'11:00〜14:00', note:'※下の時間帯からお選びください', wd:[1,2,3,4,5], hasSubSlots:true },
+{ id:'lu-11', time:'11:00〜12:00', note:'※1時間枠', parent:'lunch', wd:[1,2,3,4,5] },
+{ id:'lu-12', time:'12:00〜13:00', note:'※1時間枠', parent:'lunch', wd:[1,2,3,4,5] },
+{ id:'lu-13', time:'13:00〜14:00', note:'※1時間枠', parent:'lunch', wd:[1,2,3,4,5] },
 { id:'afternoon', time:'14:00〜18:00', note:'※下の時間帯からお選びください', wd:[1,2,3,4,5], hasSubSlots:true },
 { id:'af-14', time:'14:00〜15:00', note:'※1時間枠', parent:'afternoon', wd:[1,2,3,4,5] },
 { id:'af-15', time:'15:00〜16:00', note:'※1時間枠', parent:'afternoon', wd:[1,2,3,4,5] },
