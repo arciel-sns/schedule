@@ -784,6 +784,140 @@ input, select, textarea { font-size: 16px !important; } /* iOSズーム防止 */
   margin-left: 4px;
 }
 .mc-del-btn:hover { background: var(--red-lt); color: var(--red); border-color: rgba(220,38,38,.3); }
+
+/* ── Attendance History Drawer ── */
+.hist-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  z-index: 400;
+}
+.hist-overlay.open { display: block; }
+.hist-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 340px;
+  max-width: 95vw;
+  background: var(--surface);
+  border-left: 1px solid var(--border-md);
+  box-shadow: -8px 0 40px rgba(0,0,0,0.15);
+  z-index: 401;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hist-drawer.open { transform: translateX(0); }
+.hist-drawer-header {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.hist-drawer-av {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+.hist-drawer-name { font-size: 15px; font-weight: 700; flex: 1; }
+.hist-close-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--border-md);
+  background: transparent;
+  cursor: pointer;
+  font-size: 16px;
+  color: var(--sub);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+  font-family: 'Noto Sans JP', sans-serif;
+}
+.hist-close-btn:hover { background: var(--surface2); }
+.hist-count-box {
+  margin: 16px 20px 12px;
+  background: var(--accent-lt);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--r-lg);
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+.hist-count-num {
+  font-size: 40px;
+  font-weight: 900;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+}
+.hist-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--hint);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0 20px;
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+.hist-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 20px;
+}
+.hist-date-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  background: var(--surface2);
+  border-radius: var(--r-md);
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 500;
+}
+.hist-date-tag {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--green-lt);
+  color: var(--green);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.hist-open-btn {
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 100px;
+  background: rgba(99,102,241,0.1);
+  border: 1px solid rgba(99,102,241,0.25);
+  color: #6366f1;
+  cursor: pointer;
+  font-family: 'Noto Sans JP', sans-serif;
+  font-weight: 600;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.hist-open-btn:hover { background: rgba(99,102,241,0.2); }
 </style>
 
 </head>
@@ -832,6 +966,26 @@ input, select, textarea { font-size: 16px !important; } /* iOSズーム防止 */
       </div>
     </div>
   </div>
+</div>
+<div class="hist-overlay" id="hist-overlay" onclick="closeHistoryPanel()"></div>
+<div class="hist-drawer" id="hist-drawer">
+  <div class="hist-drawer-header">
+    <div class="hist-drawer-av" id="hist-av"></div>
+    <div style="flex:1;min-width:0">
+      <div class="hist-drawer-name" id="hist-name"></div>
+      <div style="font-size:11px;color:var(--sub)">受講履歴管理</div>
+    </div>
+    <button class="hist-close-btn" onclick="closeHistoryPanel()">✕</button>
+  </div>
+  <div class="hist-count-box">
+    <div class="hist-count-num" id="hist-count">0</div>
+    <div>
+      <div style="font-size:13px;font-weight:700">累計受講数</div>
+      <div style="font-size:11px;color:var(--sub);margin-top:2px">これまでの累計受講回数</div>
+    </div>
+  </div>
+  <div class="hist-section-title">受講日一覧</div>
+  <div class="hist-list" id="hist-list"></div>
 </div>
 <div class="ov" id="zoom-ov">
   <div class="modal" style="max-width:340px;text-align:center">
@@ -992,7 +1146,7 @@ function getJpHolidays(year){
   });
   return h;
 }
-let _cache = { bookings:[], members:[], blocked:{}, zoomUrls:{} };
+let _cache = { bookings:[], members:[], blocked:{}, zoomUrls:{}, attendanceHistory:{} };
 let _fbReady = false;
 let _fbLoadedPaths = new Set();
 function load(){ return _cache; }
@@ -1065,6 +1219,14 @@ if(_fbReady && mode==='instructor') {
 if(document.getElementById('itab-members').style.display!=='none') renderMembers();
 }
 });
+// ── /attendance_history 専用リスナー ─────────────────
+_firebaseDb.ref(DB_PATH+'/attendance_history').on('value', snapshot => {
+_cache.attendanceHistory = snapshot.val() || {};
+if(_fbReady && mode==='instructor') {
+if(document.getElementById('itab-members').style.display!=='none') renderMembers();
+if(document.getElementById('hist-drawer').classList.contains('open')) renderHistoryPanel();
+}
+});
 }
 function refreshCurrentView(){
 if(mode === 'instructor'){
@@ -1098,9 +1260,43 @@ return now<endTime;
 });
 if(d.bookings.length!==before) save(d);
 }
+function autoRecordAttendance(){
+const d=load();
+const now=new Date();
+const todayStr=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+d.bookings.forEach(b=>{
+// 確定済みのみ対象（pending・rescheduleは除外）
+if(b.status!=='confirmed') return;
+// 授業時間が終了しているか判定
+let ended=false;
+if(b.date<todayStr){
+  ended=true;
+} else if(b.date===todayStr){
+  const endStr=(b.slotTime||'').split(/[〜~～]/)[1];
+  if(endStr){
+    const [h,m]=endStr.trim().split(':').map(Number);
+    const endTime=new Date(now); endTime.setHours(h,m,0,0);
+    if(now>=endTime) ended=true;
+  }
+}
+if(!ended) return;
+// attendance_history に未登録なら追加
+const key=encodeFirebaseKey(b.user);
+_cache.attendanceHistory=_cache.attendanceHistory||{};
+_cache.attendanceHistory[key]=_cache.attendanceHistory[key]||{};
+const dates=new Set(_cache.attendanceHistory[key].dates||[]);
+if(!dates.has(b.date)){
+  dates.add(b.date);
+  _cache.attendanceHistory[key].dates=[...dates].sort();
+  _firebaseDb.ref(DB_PATH+'/attendance_history/'+key+'/dates').set([...dates].sort())
+    .catch(e=>console.warn('Firebase write error:',e));
+}
+});
+}
 function runApp(){
+autoRecordAttendance();
 autoCleanupBookings();
-setInterval(autoCleanupBookings, 60000);
+setInterval(()=>{ autoRecordAttendance(); autoCleanupBookings(); }, 60000);
 const now = new Date();
 sCalY = iCalY = moY = now.getFullYear();
 sCalM = iCalM = moM = now.getMonth();
@@ -2261,6 +2457,7 @@ ${resc?`<span class="pill pill-red">リスケ ${resc}</span>`:''}
 </div>
 ${total===0?`<span class="warn-badge">⚠ 予約なし</span>`:''}
 ${total>0?`<button class="toggle-bk-btn" id="mc-btn-${idx}" onclick="toggleMcBooks(${idx})">予約を見る ▼</button>`:''}
+<button class="hist-open-btn" onclick="openHistoryPanel('${nameSafe}')">履歴を確認</button>
 <button onclick="openZoomOv('${nameSafe}')" title="Zoom URLを確認" style="width:30px;height:30px;border-radius:50%;background:${zBtnBg};border:1px solid ${zBtnBd};cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${zIconColor}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 10l4.553-2.276A1 1 0 0 1 21 8.723v6.554a1 1 0 0 1-1.447.894L15 14"/><rect x="1" y="6" width="14" height="12" rx="2"/></svg></button>
 <button class="mc-del-btn" onclick="openDeleteMemberModal('${nameSafe}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
 </div>
@@ -2299,6 +2496,44 @@ function execDeleteMember(){
   renderMembers();
 }
 function toggleMcBooks(idx){ const el=document.getElementById('mc-bk-'+idx); const btn=document.getElementById('mc-btn-'+idx); el.classList.toggle('open'); if(btn) btn.textContent=el.classList.contains('open')?'閉じる ▲':'予約を見る ▼'; }
+
+/* ── 受講履歴ドロワー ── */
+let _histName = null;
+function openHistoryPanel(name) {
+  _histName = name;
+  document.getElementById('hist-av').textContent = name.slice(0,1);
+  document.getElementById('hist-name').textContent = name;
+  autoRecordAttendance();
+  renderHistoryPanel();
+  document.getElementById('hist-overlay').classList.add('open');
+  document.getElementById('hist-drawer').classList.add('open');
+}
+function closeHistoryPanel() {
+  document.getElementById('hist-overlay').classList.remove('open');
+  document.getElementById('hist-drawer').classList.remove('open');
+  _histName = null;
+}
+function renderHistoryPanel() {
+  if(!_histName) return;
+  const d = load();
+  const key = encodeFirebaseKey(_histName);
+  const hist = (d.attendanceHistory||{})[key] || {};
+  // attendance_history の自動記録分のみ参照
+  const allDates = (hist.dates || [])
+    .map(ds => { const [y,m,dd] = ds.split('-'); return { date: ds, label: `${y}年${parseInt(m)}月${parseInt(dd)}日` }; })
+    .sort((a,b2) => b2.date.localeCompare(a.date));
+  document.getElementById('hist-count').textContent = allDates.length;
+  const listEl = document.getElementById('hist-list');
+  if(allDates.length === 0) {
+    listEl.innerHTML = '<div style="text-align:center;padding:28px;color:var(--hint);font-size:13px">受講履歴がありません</div>';
+    return;
+  }
+  listEl.innerHTML = allDates.map(item => {
+    return `<div class="hist-date-item"><span class="hist-date-tag">受講済み</span><span style="flex:1">${item.label}</span></div>`;
+  }).join('');
+}
+
+
 function showToast(msg, type='t-info'){
 let wrap = document.getElementById('toast-wrap');
 if(!wrap){ wrap = document.createElement('div'); wrap.id='toast-wrap'; wrap.className='toast-wrap'; document.body.appendChild(wrap); }
