@@ -1160,7 +1160,7 @@ _firebaseDb.ref(DB_PATH+'/blocked').set(d.blocked || {}).catch(e => console.warn
 }
 function startFirebaseSync(){
 function _tryStart(){
-if(!_fbReady && _fbLoadedPaths.size >= 3){
+if(!_fbReady && _fbLoadedPaths.size >= 4){
 _fbReady = true;
 runApp();
 }
@@ -1222,10 +1222,11 @@ if(document.getElementById('itab-members').style.display!=='none') renderMembers
 // ── /attendance_history 専用リスナー ─────────────────
 _firebaseDb.ref(DB_PATH+'/attendance_history').on('value', snapshot => {
 _cache.attendanceHistory = snapshot.val() || {};
+_fbLoadedPaths.add('attendance_history');
 if(_fbReady && mode==='instructor') {
 if(document.getElementById('itab-members').style.display!=='none') renderMembers();
 if(document.getElementById('hist-drawer').classList.contains('open')) renderHistoryPanel();
-}
+} else { _tryStart(); }
 });
 }
 function refreshCurrentView(){
@@ -1284,11 +1285,11 @@ if(!ended) return;
 const key=encodeFirebaseKey(b.user);
 _cache.attendanceHistory=_cache.attendanceHistory||{};
 _cache.attendanceHistory[key]=_cache.attendanceHistory[key]||{};
-const dates=new Set(_cache.attendanceHistory[key].dates||[]);
-if(!dates.has(b.date)){
-  dates.add(b.date);
-  _cache.attendanceHistory[key].dates=[...dates].sort();
-  _firebaseDb.ref(DB_PATH+'/attendance_history/'+key+'/dates').set([...dates].sort())
+const records=_cache.attendanceHistory[key].records||{};
+if(!records[b.date]){
+  records[b.date]=b.slotTime||'';
+  _cache.attendanceHistory[key].records=records;
+  _firebaseDb.ref(DB_PATH+'/attendance_history/'+key+'/records').set(records)
     .catch(e=>console.warn('Firebase write error:',e));
 }
 });
@@ -2518,18 +2519,21 @@ function renderHistoryPanel() {
   const d = load();
   const key = encodeFirebaseKey(_histName);
   const hist = (d.attendanceHistory||{})[key] || {};
-  // attendance_history の自動記録分のみ参照
-  const allDates = (hist.dates || [])
-    .map(ds => { const [y,m,dd] = ds.split('-'); return { date: ds, label: `${y}年${parseInt(m)}月${parseInt(dd)}日` }; })
+  const records = hist.records || {};
+  const allEntries = Object.entries(records)
+    .map(([ds, slotTime]) => {
+      const [y,m,dd] = ds.split('-');
+      return { date: ds, label: `${y}年${parseInt(m)}月${parseInt(dd)}日`, slotTime: slotTime||'' };
+    })
     .sort((a,b2) => b2.date.localeCompare(a.date));
-  document.getElementById('hist-count').textContent = allDates.length;
+  document.getElementById('hist-count').textContent = allEntries.length;
   const listEl = document.getElementById('hist-list');
-  if(allDates.length === 0) {
+  if(allEntries.length === 0) {
     listEl.innerHTML = '<div style="text-align:center;padding:28px;color:var(--hint);font-size:13px">受講履歴がありません</div>';
     return;
   }
-  listEl.innerHTML = allDates.map(item => {
-    return `<div class="hist-date-item"><span class="hist-date-tag">受講済み</span><span style="flex:1">${item.label}</span></div>`;
+  listEl.innerHTML = allEntries.map(item => {
+    return `<div class="hist-date-item"><span class="hist-date-tag">受講済み</span><span style="flex:1">${item.label}</span><span style="font-size:12px;color:var(--sub);white-space:nowrap">${item.slotTime}</span></div>`;
   }).join('');
 }
 
